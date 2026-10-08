@@ -177,7 +177,15 @@ section.about{padding-block:72px}
 
 /* ===== video-first ===== */
 .player{position:relative;aspect-ratio:9/16;border-radius:18px;overflow:hidden;background:#000;box-shadow:0 30px 60px rgba(0,0,0,.32)}
-.player>a,.player>iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;text-decoration:none}
+.player>a,.player>iframe,.player>.pbtn,.player>video{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;text-decoration:none}
+.player>.pbtn{padding:0;margin:0;background:none;cursor:pointer;font:inherit;color:inherit}
+.player>.pbtn:focus-visible{outline:3px solid var(--amber);outline-offset:-3px}
+.player>video{object-fit:contain;background:#000}
+.player .pbtn:hover .play{transform:translate(-50%,-50%) scale(1.07)}
+.player .nextup{position:absolute;left:12px;right:12px;top:12px;z-index:2;display:flex;flex-direction:column;gap:2px;text-align:left;padding:10px 12px;border:0;border-radius:12px;background:rgba(3,26,52,.88);color:#FBF1E2;font:inherit;cursor:pointer}
+.player .nextup span{font-size:10px;letter-spacing:.18em;font-weight:800;text-transform:uppercase;color:var(--amber)}
+.player .nextup b{font-size:13px;line-height:1.35;font-weight:700}
+.ritem .th b{position:absolute;right:7px;bottom:9px;font-size:10px;font-weight:700;letter-spacing:.02em;color:#fff;background:rgba(3,26,52,.78);padding:2px 6px;border-radius:6px}
 .player img{width:100%;height:100%;object-fit:cover}
 .player .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,26,52,.35) 0%,rgba(3,26,52,0) 22%,rgba(3,26,52,0) 55%,rgba(3,26,52,.82) 100%)}
 .player .play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:76px;height:76px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;box-shadow:0 14px 34px rgba(0,0,0,.45);transition:transform .18s ease}
@@ -283,15 +291,25 @@ footer .tagline{font-size:12.5px;max-width:48ch}
   function embed(pl){var id=pl.getAttribute('data-fb'); if(!id||/claude/.test(location.hostname)) return false;
     var f=document.createElement('iframe'); f.src='https://www.facebook.com/plugins/video.php?href='+encodeURIComponent('https://www.facebook.com/watch/?v='+id)+'&show_text=false&autoplay=true';
     f.setAttribute('allow','autoplay; encrypted-media; picture-in-picture; web-share'); f.setAttribute('allowfullscreen',''); f.title='Video BẢN84'; pl.innerHTML=''; pl.appendChild(f); return true;}
-  document.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('.player > a'); if(!a) return; if(embed(a.parentNode)) e.preventDefault();});
+  // Native in-page playback: swap the poster for a <video> on tap; only one video plays at a time.
+  function play(pl){var src=pl.getAttribute('data-src'); if(!src) return false;
+    var v=document.createElement('video'); v.src=src; v.poster=pl.getAttribute('data-poster')||''; v.controls=true; v.playsInline=true;
+    v.setAttribute('playsinline',''); v.setAttribute('preload','auto'); v.setAttribute('controlslist','nodownload'); v.title='Video BẢN84';
+    pl.innerHTML=''; pl.appendChild(v); pl.classList.add('live'); var pr=v.play(); if(pr&&pr.catch) pr.catch(function(){}); return true;}
+  document.addEventListener('play',function(e){document.querySelectorAll('.player video').forEach(function(x){if(x!==e.target) x.pause();});},true);
+  document.addEventListener('click',function(e){var t=e.target.closest&&e.target.closest('.player > .pbtn, .player > a'); if(!t) return;
+    if(play(t.parentNode)||embed(t.parentNode)) e.preventDefault();});
   var vp=document.getElementById('vhPlayer');
   document.querySelectorAll('.ritem').forEach(function(b){b.addEventListener('click',function(){ if(!vp) return; var d=b.dataset;
-    vp.setAttribute('data-fb',d.fb);
-    vp.innerHTML='<a href="https://www.facebook.com/watch/?v='+d.fb+'" target="_blank" rel="noopener" aria-label="Phát video"><img src="'+d.poster+'" alt=""><span class="shade"></span><span class="play"><svg viewBox="0 0 24 24" fill="#4A2E0A"><path d="M8 5v14l11-7z"/></svg></span><span class="cap"><span class="tag cat">'+d.cat+'</span><span>Video · 3–4 phút</span></span></a>';
+    vp.setAttribute('data-fb',d.fb); vp.setAttribute('data-poster',d.poster); if(d.src) vp.setAttribute('data-src',d.src); else vp.removeAttribute('data-src');
     var t=document.getElementById('vhTitle'); t.textContent=d.title; t.href=d.href; document.getElementById('vhRead').href=d.href;
     document.getElementById('vhSum').textContent=d.sum; document.getElementById('vhMeta').innerHTML='<span class="tag cat">'+d.cat+'</span><span>'+d.date+'</span>';
     document.querySelectorAll('.ritem').forEach(function(x){x.classList.toggle('on',x===b);});
-    embed(vp); if(window.innerWidth<900) vp.scrollIntoView({behavior:'smooth',block:'center'});});});
+    if(!play(vp)){vp.innerHTML='<a href="https://www.facebook.com/watch/?v='+d.fb+'" target="_blank" rel="noopener" aria-label="Phát video"><img src="'+d.poster+'" alt=""><span class="shade"></span><span class="play"><svg viewBox="0 0 24 24" fill="#4A2E0A"><path d="M8 5v14l11-7z"/></svg></span></a>'; embed(vp);}
+    if(window.innerWidth<900) vp.scrollIntoView({behavior:'smooth',block:'center'});});});
+  // When the hero video ends, cue up the next one in the rail (poster only, no autoplay).
+  if(vp){vp.addEventListener('ended',function(){var on=document.querySelector('.ritem.on'),nx=on&&on.nextElementSibling; if(nx){var cap=document.createElement('button');
+    cap.type='button'; cap.className='nextup'; cap.innerHTML='<span>Xem tiếp</span><b>'+nx.dataset.title+'</b>'; cap.addEventListener('click',function(){nx.click();}); vp.appendChild(cap);}},true);}
   document.querySelectorAll('button[data-share]').forEach(function(b){b.addEventListener('click',function(){var d={title:b.getAttribute('data-title'),url:b.getAttribute('data-share')};
     if(navigator.share){navigator.share(d).catch(function(){});}else{copyText(d.url,b,'Đã sao chép link');}});});
 })();
