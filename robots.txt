@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 Disallow: /tim-kiem.html
-Sitemap: https://ban84vn.com/sitemap.xml
+Sitemap: https://ban84.vn/sitemap.xml

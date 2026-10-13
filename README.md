@@ -1,8 +1,8 @@
-# ban84vn.com
+# ban84.vn
 
 BẢN84 — kênh phân tích & góc nhìn về kinh tế, chính sách và AI ứng dụng cho người trẻ Việt Nam. Không phải cơ quan báo chí.
 
-Trang tĩnh, phát hành qua GitHub Pages tại https://ban84vn.com (tên miền khai báo trong tệp `CNAME`). Không cần hosting hay cơ sở dữ liệu.
+Trang tĩnh, phát hành qua GitHub Pages tại https://ban84.vn (tên miền khai báo trong tệp `CNAME`). Tên miền cũ ban84vn.com chuyển hướng về ban84.vn bằng repo `ban84vn-com-redirect`. Không cần hosting hay cơ sở dữ liệu.
 
 ## Video
 Video phát trực tiếp trên trang bằng trình phát HTML5, không chuyển sang Facebook/TikTok.
@@ -10,7 +10,13 @@ Video phát trực tiếp trên trang bằng trình phát HTML5, không chuyển
 - `img/poster/<slug>.jpg`: ảnh chờ 9:16 (`s/` = 360w cho thanh chọn video).
 - Bài chưa có bản web thì tự quay về trình phát Facebook.
 
-## DNS (Squarespace Domains)
+## DNS
+ban84.vn (Cloud360 / dns.cloud360.vn) — tên miền chính của trang:
+- `@` A → 185.199.108.153 · 185.199.109.153 · 185.199.110.153 · 185.199.111.153
+- `@` AAAA → 2606:50c0:8000::153 · 2606:50c0:8001::153 · 2606:50c0:8002::153 · 2606:50c0:8003::153
+- `www` CNAME → oceantreasurevn-coder.github.io
+
+ban84vn.com (Squarespace Domains) — chuyển hướng về ban84.vn qua repo `ban84vn-com-redirect` (GitHub Pages):
 - `@` A → 185.199.108.153 · 185.199.109.153 · 185.199.110.153 · 185.199.111.153
 - `www` CNAME → oceantreasurevn-coder.github.io
 - Giữ nguyên MX `smtp.google.com` và TXT SPF của Google Workspace (email Infor@ban84vn.com).
