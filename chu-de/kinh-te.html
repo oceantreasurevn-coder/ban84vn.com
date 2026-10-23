@@ -201,7 +201,7 @@
   function gtLoad(){if(window.__gt) return; window.__gt=1;
     window.gtInit=function(){try{new google.translate.TranslateElement({pageLanguage:'vi',includedLanguages:'en,zh-CN',autoDisplay:false},'gt_el');}catch(e){}};
     var s=d.createElement('script'); s.src='https://translate.google.com/translate_a/element.js?cb=gtInit'; s.async=true;
-    s.onerror=function(){setLangCookie('vi'); location.href=proxyUrl(curLang());}; d.body.appendChild(s);}
+    s.onerror=function(){var l=curLang(); setLangCookie('vi'); location.href=proxyUrl(l);}; d.body.appendChild(s);}
   if(LS){var cl=/translate\.goog/.test(location.hostname)?((/[?&]_x_tr_tl=([^&]+)/.exec(location.search)||[])[1]||'vi'):curLang();
     LS.querySelectorAll('button').forEach(function(b){var on=b.getAttribute('data-l')===cl; b.classList.toggle('on',on); b.setAttribute('aria-pressed',on?'true':'false');
       b.addEventListener('click',function(e){var l=b.getAttribute('data-l');
